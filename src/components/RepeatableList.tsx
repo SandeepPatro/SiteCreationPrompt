@@ -56,9 +56,7 @@ export function RepeatableList({
     <fieldset className="flex flex-col gap-1.5">
       <legend className="mb-1.5 font-medium">
         {label}
-        {optional && (
-          <span className="font-normal text-slate-600 dark:text-slate-400"> (optional)</span>
-        )}
+        {optional && <span className="text-muted font-normal"> (optional)</span>}
       </legend>
       {help && <FieldHelp id={id}>{help}</FieldHelp>}
       <ul className="flex flex-col gap-2">

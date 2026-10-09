@@ -43,12 +43,12 @@ export function ConfirmDialog({
         e.preventDefault();
         onCancel();
       }}
-      className="m-auto w-[calc(100%-2rem)] max-w-sm rounded-2xl border border-slate-200 bg-white p-6 text-slate-900 shadow-xl backdrop:bg-slate-950/60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+      className="rounded-card border-line bg-surface text-ink m-auto w-[calc(100%-2rem)] max-w-sm border p-6 shadow-xl backdrop:bg-black/60"
     >
-      <h2 id={titleId} className="text-lg font-semibold">
+      <h2 id={titleId} className="font-display text-lg font-bold">
         {title}
       </h2>
-      <p id={descriptionId} className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+      <p id={descriptionId} className="text-muted mt-2 text-sm">
         {description}
       </p>
       <div className="mt-6 flex flex-wrap justify-end gap-2">

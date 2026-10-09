@@ -1,12 +1,64 @@
 @import 'tailwindcss';
 
-/* Brand tokens — swap these (and public/favicon.svg) when the real brand arrives. */
+/*
+ * Theme "Ember & Ink". Raw values live in CSS variables that switch with the system colour
+ * scheme; Tailwind utilities (bg-surface, text-ink, …) point at them, so components need no
+ * dark: variants for theme colours.
+ * Accent is reserved for primary actions, progress, focus rings and code-box headings.
+ */
+:root {
+  --pf-ground: #f6f7f9;
+  --pf-surface: #ffffff;
+  --pf-border: #e3e6eb;
+  --pf-ink: #14161a;
+  --pf-muted: #5b616e;
+  --pf-accent: #c2410c;
+  --pf-accent-hover: #9a3412;
+  --pf-on-accent: #ffffff;
+  --pf-code-bg: #14161a;
+  --pf-code-ink: #eceef1;
+  --pf-code-heading: #fb8a3c;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --pf-ground: #0e1013;
+    --pf-surface: #171a1f;
+    --pf-border: #2a2f37;
+    --pf-ink: #eceef1;
+    --pf-muted: #9aa1ac;
+    --pf-accent: #fb8a3c;
+    --pf-accent-hover: #fdba74;
+    --pf-on-accent: #0e1013;
+    --pf-code-bg: #0e1013;
+    --pf-code-ink: #eceef1;
+    --pf-code-heading: #fb8a3c;
+    color-scheme: dark;
+  }
+}
+
+@theme inline {
+  --color-ground: var(--pf-ground);
+  --color-surface: var(--pf-surface);
+  --color-line: var(--pf-border);
+  --color-ink: var(--pf-ink);
+  --color-muted: var(--pf-muted);
+  --color-accent: var(--pf-accent);
+  --color-accent-hover: var(--pf-accent-hover);
+  --color-on-accent: var(--pf-on-accent);
+  --color-code-bg: var(--pf-code-bg);
+  --color-code-ink: var(--pf-code-ink);
+  --color-code-heading: var(--pf-code-heading);
+}
+
 @theme {
-  --color-brand-50: #eef2ff;
-  --color-brand-300: #a5b4fc;
-  --color-brand-500: #6366f1;
-  --color-brand-600: #4f46e5;
-  --color-brand-700: #4338ca;
+  --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Bricolage Grotesque', 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --radius-card: 18px;
+  --radius-control: 10px;
 
   --animate-step-in: step-in 200ms ease-out;
 
@@ -20,4 +72,8 @@
       transform: none;
     }
   }
+}
+
+body {
+  font-family: var(--font-sans);
 }

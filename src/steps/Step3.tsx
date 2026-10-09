@@ -31,7 +31,7 @@ export function Step3({ prompt, projectName }: { prompt: string; projectName: st
     <div className="flex flex-col gap-5">
       <div className="flex flex-col gap-2">
         <StepHeading>Your prompt</StepHeading>
-        <p className="text-slate-600 dark:text-slate-300">
+        <p className="text-muted">
           Paste this as the first message to your AI coding agent (Claude Code, Cursor, Copilot…).
         </p>
       </div>
@@ -47,7 +47,7 @@ export function Step3({ prompt, projectName }: { prompt: string; projectName: st
 
       <CodeBox ref={boxRef} text={prompt} label="Generated kickoff prompt" />
 
-      <p aria-live="polite" className="text-sm text-slate-600 dark:text-slate-400">
+      <p aria-live="polite" className="text-muted text-sm">
         {copyState === 'copied' && <span className="sr-only">Prompt copied to clipboard.</span>}
         {copyState === 'failed' &&
           "Couldn't copy automatically — the prompt is selected, press Ctrl/Cmd + C to copy it."}

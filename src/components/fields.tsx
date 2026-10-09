@@ -12,16 +12,14 @@ export function FieldLabel({
   return (
     <label htmlFor={htmlFor} className="font-medium">
       {children}
-      {optional && (
-        <span className="font-normal text-slate-600 dark:text-slate-400"> (optional)</span>
-      )}
+      {optional && <span className="text-muted font-normal"> (optional)</span>}
     </label>
   );
 }
 
 export function FieldHelp({ id, children }: { id: string; children: ReactNode }) {
   return (
-    <p id={`${id}-help`} className="text-sm text-slate-600 dark:text-slate-400">
+    <p id={`${id}-help`} className="text-muted text-sm">
       {children}
     </p>
   );

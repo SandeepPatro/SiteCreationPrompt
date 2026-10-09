@@ -55,7 +55,7 @@ export default function App() {
         : '';
 
   return (
-    <div className="flex min-h-dvh flex-col bg-slate-100 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+    <div className="bg-ground text-ink flex min-h-dvh flex-col">
       <Header />
       <main className="flex-1 px-4 py-6 sm:py-8">
         <div className="mx-auto w-full max-w-[720px]">

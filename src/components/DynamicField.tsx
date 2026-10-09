@@ -69,7 +69,7 @@ export function DynamicField({ question }: { question: Question }) {
               <input
                 type="checkbox"
                 value={option}
-                className="accent-brand-600 size-4 shrink-0"
+                className="accent-ink size-4 shrink-0"
                 {...aria}
                 {...register(question.id)}
               />
@@ -92,7 +92,7 @@ export function DynamicField({ question }: { question: Question }) {
               <input
                 type="radio"
                 value={value}
-                className="accent-brand-600 size-4 shrink-0"
+                className="accent-ink size-4 shrink-0"
                 {...aria}
                 {...register(question.id)}
               />
@@ -108,7 +108,7 @@ function OptionalLegend({ label, hint = 'optional' }: { label: string; hint?: st
   return (
     <>
       {label}
-      <span className="font-normal text-slate-600 dark:text-slate-400"> ({hint})</span>
+      <span className="text-muted font-normal"> ({hint})</span>
     </>
   );
 }

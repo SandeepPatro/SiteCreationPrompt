@@ -1,1 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#4f46e5"/><path d="M9 11l6 5-6 5M17 21h7" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <style>
+    .back { fill: #D5D9E0; } .mid { fill: #C2410C; } .front { fill: #14161A; } .glyph { stroke: #FFFFFF; }
+    @media (prefers-color-scheme: dark) {
+      .back { fill: #2A2F37; } .mid { fill: #FB8A3C; } .front { fill: #ECEEF1; } .glyph { stroke: #0E1013; }
+    }
+  </style>
+  <rect class="back" x="20" y="4" width="38" height="28" rx="6"/>
+  <rect class="mid" x="13" y="12" width="40" height="30" rx="6"/>
+  <rect class="front" x="6" y="22" width="42" height="36" rx="7"/>
+  <path class="glyph" d="M16 32 L24 40 L16 48" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

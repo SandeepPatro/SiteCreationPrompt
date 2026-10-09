@@ -15,7 +15,7 @@ export function ProgressBar({ current }: { current: 1 | 2 | 3 }) {
               aria-current={active ? 'step' : undefined}
             >
               {i > 0 && (
-                <span aria-hidden="true" className="text-slate-400 dark:text-slate-500">
+                <span aria-hidden="true" className="text-muted">
                   →
                 </span>
               )}
@@ -23,21 +23,15 @@ export function ProgressBar({ current }: { current: 1 | 2 | 3 }) {
                 aria-hidden="true"
                 className={`flex size-6 items-center justify-center rounded-full text-xs font-semibold ${
                   active
-                    ? 'bg-brand-600 text-white'
+                    ? 'bg-accent text-on-accent'
                     : done
-                      ? 'bg-brand-50 text-brand-700 dark:bg-slate-700 dark:text-white'
-                      : 'bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
+                      ? 'border-accent text-accent border'
+                      : 'border-line text-muted border'
                 }`}
               >
                 {done ? '✓' : step}
               </span>
-              <span
-                className={
-                  active
-                    ? 'font-semibold text-slate-900 dark:text-white'
-                    : 'text-slate-600 dark:text-slate-300'
-                }
-              >
+              <span className={active ? 'text-ink font-semibold' : 'text-muted'}>
                 {label}
                 {done && <span className="sr-only"> (completed)</span>}
               </span>

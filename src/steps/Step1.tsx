@@ -87,7 +87,7 @@ export function Step1({ defaultValues, onChange, onSubmit }: Step1Props) {
       <form id={STEP1_FORM_ID} onSubmit={submit} noValidate className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
           <StepHeading>Tell us about your project</StepHeading>
-          <p className="text-slate-600 dark:text-slate-300">
+          <p className="text-muted">
             A few basics first. Plain language is fine — there are no wrong answers.
           </p>
         </div>
@@ -155,7 +155,7 @@ export function Step1({ defaultValues, onChange, onSubmit }: Step1Props) {
               <input
                 type="radio"
                 value={type}
-                className="accent-brand-600 size-4 shrink-0"
+                className="accent-ink size-4 shrink-0"
                 {...describedBy('step1-projectType', false, errors.projectType?.message)}
                 {...register('projectType')}
               />
@@ -187,7 +187,7 @@ export function Step1({ defaultValues, onChange, onSubmit }: Step1Props) {
               <input
                 type="radio"
                 value="recommend"
-                className="accent-brand-600 size-4 shrink-0"
+                className="accent-ink size-4 shrink-0"
                 {...register('stackMode')}
               />
               <span className="text-sm">Recommend a stack for me</span>
@@ -196,7 +196,7 @@ export function Step1({ defaultValues, onChange, onSubmit }: Step1Props) {
               <input
                 type="radio"
                 value="preferences"
-                className="accent-brand-600 size-4 shrink-0"
+                className="accent-ink size-4 shrink-0"
                 {...register('stackMode')}
               />
               <span className="text-sm">I have preferences</span>
@@ -234,7 +234,7 @@ export function Step1({ defaultValues, onChange, onSubmit }: Step1Props) {
               <input
                 type="radio"
                 value={level}
-                className="accent-brand-600 size-4 shrink-0"
+                className="accent-ink size-4 shrink-0"
                 {...describedBy('step1-experience', true, errors.experience?.message)}
                 {...register('experience')}
               />
@@ -243,7 +243,7 @@ export function Step1({ defaultValues, onChange, onSubmit }: Step1Props) {
           ))}
         </RadioGroup>
 
-        <p className="rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+        <p className="rounded-control border-line bg-ground text-muted border px-3 py-2 text-sm">
           <span aria-hidden="true">🔒 </span>
           Your Step 1 answers are sent to Google&apos;s Gemini API to generate follow-up questions.
           We don&apos;t store them, but Google may retain and use them under its free-tier terms —

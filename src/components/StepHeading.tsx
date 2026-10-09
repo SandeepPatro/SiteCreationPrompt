@@ -6,7 +6,7 @@ export function StepHeading({ children }: { children: ReactNode }) {
     <h2
       tabIndex={-1}
       data-step-heading
-      className="scroll-mt-4 text-xl font-semibold tracking-tight outline-none sm:text-2xl"
+      className="font-display scroll-mt-4 text-xl font-bold tracking-tight outline-none sm:text-2xl"
     >
       {children}
     </h2>
