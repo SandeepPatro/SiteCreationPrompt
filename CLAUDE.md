@@ -101,5 +101,6 @@ Never prefix with `VITE_` — that ships them to the browser. Upstash vars are o
 - Vercel env vars (Production): `GEMINI_API_KEY`, `GEMINI_MODEL`, `RATE_LIMIT_SALT` (added via CLI, sensitive) + `KV_URL`, `KV_REST_API_URL`, `KV_REST_API_TOKEN`, `KV_REST_API_READ_ONLY_TOKEN`, `REDIS_URL` (managed by the Upstash Marketplace integration, resource `upstash-kv-alizarin-grass`, connected to this project for Production + Preview; don't edit these by hand). Rate limit verified: `npm run smoke:api` (10 allowed, 11th blocked) and production writes `promptforge:followups:<ip-hash>:<window>` keys.
 - Local `.env.local` holds `KV_REST_API_URL` / `KV_REST_API_TOKEN` copied by hand. Don't run `vercel env pull` (it overwrites `.env.local`, and sensitive vars aren't pulled).
 - The Upstash token was pasted into a chat log on 2026-10-09 → rotate it (Upstash console → Reset credentials), redeploy, and update `.env.local`.
-- A second Vercel project, `site-creation-prompt`, also builds this repo on every push (created from the dashboard). It has no Gemini vars. Owner to decide: delete it (`npx vercel project rm site-creation-prompt`) or disconnect its Git.
+- The duplicate Vercel project `site-creation-prompt` (created from the dashboard, no Gemini vars) was deleted on 2026-10-09. `sitecreationprompt` is the only project.
+- Final live check (2026-10-09): full flow on production with real Gemini (AI questions in ~2.4s), copy works, no page errors.
 - Bundle 122 KB gz (budget 200).
