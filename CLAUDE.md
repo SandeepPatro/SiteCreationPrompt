@@ -14,16 +14,16 @@ Owner is intermediate: give brief reasoning, explain only non-obvious choices.
 
 ## Commands
 
-| Task                      | Command                                                              |
-| ------------------------- | -------------------------------------------------------------------- |
-| Frontend only dev         | `npm run dev`                                                        |
-| Frontend + `/api`         | `npm run dev:full` (`vercel dev`; needs `npx vercel link` once)      |
-| Typecheck / lint / format | `npm run typecheck` / `npm run lint` / `npm run format`              |
-| Unit tests                | `npm test`                                                           |
-| Live Gemini smoke test    | `npm run smoke:api` (uses `.env.local`; spends 2 free-tier requests) |
-| e2e                       | `npm run e2e` (first time: `npx playwright install chromium`)        |
-| Build                     | `npm run build`                                                      |
-| Deploy                    | `npx vercel` (preview) / `npx vercel --prod`                         |
+| Task                      | Command                                                                                    |
+| ------------------------- | ------------------------------------------------------------------------------------------ |
+| Dev (full flow)           | `npm run dev` — Vite + dev-only `/api/followups` middleware (real Gemini via `.env.local`) |
+| Dev via Vercel runtime    | `npm run dev:full` (`vercel dev`; needs `npx vercel link` once)                            |
+| Typecheck / lint / format | `npm run typecheck` / `npm run lint` / `npm run format`                                    |
+| Unit tests                | `npm test`                                                                                 |
+| Live Gemini smoke test    | `npm run smoke:api` (uses `.env.local`; spends 2 free-tier requests)                       |
+| e2e                       | `npm run e2e` (first time: `npx playwright install chromium`)                              |
+| Build                     | `npm run build`                                                                            |
+| Deploy                    | `npx vercel` (preview) / `npx vercel --prod`                                               |
 
 ## Env vars (see `.env.example`; local values in `.env.local`, gitignored)
 
@@ -43,7 +43,8 @@ Never prefix with `VITE_` — that ships them to the browser. Upstash vars are o
 ## Where to edit things
 
 - Gemini system prompt: `api/_lib/systemPrompt.ts`. Output shape: `shared/questionSchema.ts` (wire schema → `responseJsonSchema`; snapshot test guards it). Cleanup rules: `shared/normalizeQuestions.ts`
-- Fallback questions per project type: `src/lib/fallbackQuestions.ts` (M5)
+- Fallback questions per project type: `src/lib/fallbackQuestions.ts` (test checks every list against the Question schema)
+- Step 2 notice texts: `src/lib/notices.ts`; regeneration cap: `MAX_REGENERATIONS` in `src/state/wizardReducer.ts`
 - Prompt template: `src/lib/buildPrompt.ts` (M6)
 - Limits (question count, label lengths, body size): `shared/limits.ts`; Step 1 caps + labels: `shared/step1Schema.ts`; Step 1 form messages: `src/lib/step1Form.ts`
 - Brand colours: `src/index.css` `@theme`; icon: `public/favicon.svg`
@@ -66,9 +67,15 @@ Never prefix with `VITE_` — that ships them to the browser. Upstash vars are o
 - **Rate limit after validation** (malformed requests don't burn quota), **fails open** if Upstash is missing/down (Gemini quota is the backstop).
 - `<` escaped as `\u003c` in the JSON sent to Gemini so user text can't close the `<project>` tags.
 - **`.env.example` guard test**: fails if a secret has a value there (repo is public; real values only in `.env.local`).
+- **Dev API middleware** ( , serve-only): routes to via ; loaded into server-side. Lets run the real flow without a Vercel account. Note: React StrictMode double-runs effects in dev, so a Step 1 → Step 2 transition may send 2 requests in dev (first aborted client-side). Production sends 1.
+- **Question cache** = (whitespace-insensitive). Unchanged Step 1 → straight to Step 2, no request. Changed → refetch; answers kept only when same id AND compatible type/options ().
+- **Stale responses ignored**: reducer applies a response only if still loading for the same key; leaving the loading phase aborts the fetch.
+- **Failed regeneration keeps current questions** (notice ) instead of swapping in fallbacks.
+- **Step 2 answers sync to wizard state on every change** (RHF ), so Back/Next never loses them. Booleans are Yes/No radios (unanswered stays possible); empty answers are dropped.
+- ESLint allows non-null in only.
 
 ## Status
 
-- M1–M4 done (scaffold, card shell, Step 1 form, /api/followups). Placeholders: fake 800ms loading in App.tsx (→ M5); window.confirm for Start over (→ M7).
-- Bundle 111 KB gz after Zod + RHF (budget 200). Consider `zod/mini` in M7 if needed.
+- M1–M5 done (scaffold, card shell, Step 1 form, /api/followups, Step 2). Placeholders: Step 3 content (→ M6); window.confirm for Start over (→ M7).
+- Bundle 117 KB gz after Zod + RHF (budget 200). Consider `zod/mini` in M7 if needed.
 - Gemini call verified live (`npm run smoke:api`). Not yet verified live: Upstash rate limit, Vercel bundling of api/ + shared/ (needs Vercel account).

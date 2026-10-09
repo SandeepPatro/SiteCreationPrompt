@@ -4,8 +4,15 @@ import { Card } from './components/Card';
 import { Footer } from './components/Footer';
 import { Header } from './components/Header';
 import { ProgressBar } from './components/ProgressBar';
-import { initialWizardState, progressStep, wizardReducer } from './state/wizardReducer';
+import { useFollowups } from './state/useFollowups';
+import {
+  MAX_REGENERATIONS,
+  initialWizardState,
+  progressStep,
+  wizardReducer,
+} from './state/wizardReducer';
 import { Step1, STEP1_FORM_ID } from './steps/Step1';
+import { NOTICE_TEXT } from './lib/notices';
 import { Step2, STEP2_FORM_ID } from './steps/Step2';
 import { Step3 } from './steps/Step3';
 
@@ -21,12 +28,7 @@ export default function App() {
     document.querySelector<HTMLElement>('[data-step-heading]')?.focus();
   }, [phase]);
 
-  // TODO(M5): replace with the real /api/followups request + fallback.
-  useEffect(() => {
-    if (phase !== 'loading') return;
-    const timer = setTimeout(() => dispatch({ type: 'questionsLoaded' }), 800);
-    return () => clearTimeout(timer);
-  }, [phase]);
+  useFollowups(state, dispatch);
 
   function startOver() {
     // TODO(M7): replace with an accessible confirmation dialog.
@@ -35,6 +37,12 @@ export default function App() {
   }
 
   const step = progressStep(phase);
+  const liveMessage =
+    phase === 'loading'
+      ? 'Thinking about your project…'
+      : phase === 'step2' && state.notice
+        ? NOTICE_TEXT[state.notice]
+        : '';
 
   return (
     <div className="flex min-h-dvh flex-col bg-slate-100 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
@@ -80,7 +88,13 @@ export default function App() {
             {(phase === 'loading' || phase === 'step2') && (
               <Step2
                 loading={phase === 'loading'}
-                onSubmit={() => dispatch({ type: 'step2Submitted' })}
+                questions={state.questions}
+                answers={state.step2Answers}
+                notice={state.notice}
+                regenerationsLeft={MAX_REGENERATIONS - state.regenCount}
+                onChange={(answers) => dispatch({ type: 'step2Changed', answers })}
+                onRegenerate={() => dispatch({ type: 'regenerateRequested' })}
+                onSubmit={(answers) => dispatch({ type: 'step2Submitted', answers })}
               />
             )}
             {phase === 'step3' && <Step3 />}
@@ -89,7 +103,7 @@ export default function App() {
       </main>
       <Footer />
       <p aria-live="polite" className="sr-only">
-        {phase === 'loading' ? 'Thinking about your project…' : ''}
+        {liveMessage}
       </p>
     </div>
   );

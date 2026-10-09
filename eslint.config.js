@@ -24,5 +24,10 @@ export default tseslint.config(
     files: ['api/**/*.ts', 'shared/**/*.ts', '*.config.{ts,js}', 'e2e/**/*.ts', 'tests/**/*.ts'],
     languageOptions: { globals: globals.node },
   },
+  {
+    // Tests index into arrays they just built; a non-null `!` is clearer there than defensive checks.
+    files: ['tests/**/*.ts'],
+    rules: { '@typescript-eslint/no-non-null-assertion': 'off' },
+  },
   prettier,
 );
