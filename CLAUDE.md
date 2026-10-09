@@ -67,12 +67,12 @@ Never prefix with `VITE_` — that ships them to the browser. Upstash vars are o
 - **Rate limit after validation** (malformed requests don't burn quota), **fails open** if Upstash is missing/down (Gemini quota is the backstop).
 - `<` escaped as `\u003c` in the JSON sent to Gemini so user text can't close the `<project>` tags.
 - **`.env.example` guard test**: fails if a secret has a value there (repo is public; real values only in `.env.local`).
-- **Dev API middleware** ( , serve-only): routes to via ; loaded into server-side. Lets run the real flow without a Vercel account. Note: React StrictMode double-runs effects in dev, so a Step 1 → Step 2 transition may send 2 requests in dev (first aborted client-side). Production sends 1.
-- **Question cache** = (whitespace-insensitive). Unchanged Step 1 → straight to Step 2, no request. Changed → refetch; answers kept only when same id AND compatible type/options ().
+- **Dev API middleware** (`devApi()` in `vite.config.ts`, serve-only): routes `/api/followups` to `api/followups.ts` via `ssrLoadModule`; `.env.local` is loaded into `process.env` server-side. Lets `npm run dev` run the real flow without a Vercel account. Note: React StrictMode double-runs effects in dev, so a Step 1 → Step 2 transition may send 2 requests in dev (first aborted client-side). Production sends 1.
+- **Question cache** = `normalizeKey(step1)` (whitespace-insensitive). Unchanged Step 1 → straight to Step 2, no request. Changed → refetch; answers kept only when same id AND compatible type/options (`keepCompatibleAnswers`).
 - **Stale responses ignored**: reducer applies a response only if still loading for the same key; leaving the loading phase aborts the fetch.
-- **Failed regeneration keeps current questions** (notice ) instead of swapping in fallbacks.
-- **Step 2 answers sync to wizard state on every change** (RHF ), so Back/Next never loses them. Booleans are Yes/No radios (unanswered stays possible); empty answers are dropped.
-- ESLint allows non-null in only.
+- **Failed regeneration keeps current questions** (notice `regenerate_failed`) instead of swapping in fallbacks.
+- **Step 2 answers sync to wizard state on every change** (RHF `subscribe`), so Back/Next never loses them. Booleans are Yes/No radios (unanswered stays possible); empty answers are dropped.
+- ESLint allows non-null `!` in `tests/` only.
 
 ## Status
 
