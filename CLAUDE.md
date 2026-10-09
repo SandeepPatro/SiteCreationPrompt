@@ -64,7 +64,7 @@ Never prefix with `VITE_` — that ships them to the browser. Upstash vars are o
 - **`thinkingLevel: LOW`** to keep latency under ~5s; verify with `npm run smoke:api`.
 - **Bad questions are dropped individually**; only < 3 survivors → 503 → frontend fallback.
 - **Rate limit after validation** (malformed requests don't burn quota), **fails open** if Upstash is missing/down (Gemini quota is the backstop).
-- `<` escaped as `<` in the JSON sent to Gemini so user text can't close the `<project>` tags.
+- `<` escaped as `\u003c` in the JSON sent to Gemini so user text can't close the `<project>` tags.
 
 ## Status
 
