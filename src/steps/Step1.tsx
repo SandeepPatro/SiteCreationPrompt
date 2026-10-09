@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FormProvider, useForm, useWatch, type FieldErrors } from 'react-hook-form';
 import {
   EXPERIENCE_LABELS,
@@ -19,6 +19,8 @@ export const STEP1_FORM_ID = 'step1-form';
 
 interface Step1Props {
   defaultValues: Step1FormValues;
+  /** Called on every edit with the raw draft, for autosave. */
+  onChange: (form: Step1FormValues) => void;
   onSubmit: (form: Step1FormValues, answers: Step1Answers) => void;
 }
 
@@ -38,7 +40,7 @@ function countErrors(errors: FieldErrors<Step1FormValues>) {
   return Object.keys(errors).length;
 }
 
-export function Step1({ defaultValues, onSubmit }: Step1Props) {
+export function Step1({ defaultValues, onChange, onSubmit }: Step1Props) {
   const methods = useForm<Step1FormValues>({
     resolver: zodResolver(step1FormSchema),
     defaultValues,
@@ -52,6 +54,21 @@ export function Step1({ defaultValues, onSubmit }: Step1Props) {
   } = methods;
   const [errorSummary, setErrorSummary] = useState('');
   const stackMode = useWatch({ control, name: 'stackMode' });
+
+  // Report drafts upward so they survive a refresh (see useAutosave).
+  const onChangeRef = useRef(onChange);
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  });
+  useEffect(
+    () =>
+      methods.subscribe({
+        formState: { values: true },
+        // Copy: RHF reuses its internal values object between updates.
+        callback: ({ values }) => onChangeRef.current(structuredClone(values)),
+      }),
+    [methods],
+  );
 
   const submit = handleSubmit(
     (values) => {

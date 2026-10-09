@@ -33,6 +33,7 @@ export interface WizardState {
 }
 
 export type WizardAction =
+  | { type: 'step1Changed'; form: Step1FormValues }
   | { type: 'step1Submitted'; form: Step1FormValues; answers: Step1Answers }
   | { type: 'questionsLoaded'; key: string; questions: Question[] }
   | {
@@ -115,6 +116,10 @@ export function wizardReducer(state: WizardState, action: WizardAction): WizardS
     case 'regenerateRequested':
       if (state.phase !== 'step2' || state.regenCount >= MAX_REGENERATIONS) return state;
       return { ...state, phase: 'loading', regenerating: true, regenCount: state.regenCount + 1 };
+
+    case 'step1Changed':
+      // Draft autosave only; validation happens on submit.
+      return state.phase === 'step1' ? { ...state, step1Form: action.form } : state;
 
     case 'step2Changed':
       return state.phase === 'step2' ? { ...state, step2Answers: action.answers } : state;

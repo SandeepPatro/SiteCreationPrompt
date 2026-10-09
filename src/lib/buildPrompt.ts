@@ -41,11 +41,12 @@ function section(title: string, body: string | null): string | null {
 
 function stackSection(step1: Step1Answers): string {
   if (step1.stack.mode === 'recommend') {
+    // One line per paragraph: hard wraps look broken when pasted into a chat box.
     return [
       "I don't have a stack preference. Propose **2 stack options** suited to this project, with the",
       'trade-offs of each (cost, complexity, hosting, learning curve), and recommend one.',
       'Wait for my choice before setting anything up.',
-    ].join('\n');
+    ].join(' ');
   }
   const quoted = step1.stack.notes
     .trim()

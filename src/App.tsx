@@ -1,9 +1,12 @@
-import { useEffect, useReducer, useRef } from 'react';
+import { useEffect, useReducer, useRef, useState } from 'react';
 import { Button } from './components/Button';
 import { Card } from './components/Card';
+import { ConfirmDialog } from './components/ConfirmDialog';
 import { Footer } from './components/Footer';
 import { Header } from './components/Header';
 import { ProgressBar } from './components/ProgressBar';
+import { loadState } from './lib/storage';
+import { useAutosave } from './state/useAutosave';
 import { useFollowups } from './state/useFollowups';
 import {
   MAX_REGENERATIONS,
@@ -18,7 +21,13 @@ import { Step2, STEP2_FORM_ID } from './steps/Step2';
 import { Step3 } from './steps/Step3';
 
 export default function App() {
-  const [state, dispatch] = useReducer(wizardReducer, initialWizardState);
+  // Restore saved progress (validated) on first render; falls back to a fresh start.
+  const [state, dispatch] = useReducer(
+    wizardReducer,
+    undefined,
+    () => loadState() ?? initialWizardState,
+  );
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const { phase } = state;
 
   // Move focus to the step heading whenever the phase changes (not on first load).
@@ -30,11 +39,11 @@ export default function App() {
   }, [phase]);
 
   useFollowups(state, dispatch);
+  useAutosave(state);
 
-  function startOver() {
-    // TODO(M7): replace with an accessible confirmation dialog.
-    if (window.confirm('Start over? This clears all your answers.'))
-      dispatch({ type: 'startOver' });
+  function confirmStartOver() {
+    setConfirmOpen(false);
+    dispatch({ type: 'startOver' }); // useAutosave then clears storage
   }
 
   const step = progressStep(phase);
@@ -73,7 +82,7 @@ export default function App() {
                   </Button>
                 )}
                 {step === 3 && (
-                  <Button variant="secondary" onClick={startOver}>
+                  <Button variant="secondary" onClick={() => setConfirmOpen(true)}>
                     Start over
                   </Button>
                 )}
@@ -83,6 +92,7 @@ export default function App() {
             {phase === 'step1' && (
               <Step1
                 defaultValues={state.step1Form}
+                onChange={(form) => dispatch({ type: 'step1Changed', form })}
                 onSubmit={(form, answers) => dispatch({ type: 'step1Submitted', form, answers })}
               />
             )}
@@ -108,6 +118,14 @@ export default function App() {
         </div>
       </main>
       <Footer />
+      <ConfirmDialog
+        open={confirmOpen}
+        title="Start over?"
+        description="This clears all your answers and the generated prompt. This can't be undone."
+        confirmLabel="Start over"
+        onConfirm={confirmStartOver}
+        onCancel={() => setConfirmOpen(false)}
+      />
       <p aria-live="polite" className="sr-only">
         {liveMessage}
       </p>

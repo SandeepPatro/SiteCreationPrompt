@@ -88,6 +88,16 @@ describe('wizardReducer: navigation', () => {
     );
   });
 
+  it('records Step 1 drafts only while on Step 1', () => {
+    const draft = { ...emptyStep1Form, projectName: 'Draft' };
+    expect(wizardReducer(initialWizardState, { type: 'step1Changed', form: draft }).step1Form).toBe(
+      draft,
+    );
+    expect(wizardReducer(at('step2'), { type: 'step1Changed', form: draft }).step1Form).not.toBe(
+      draft,
+    );
+  });
+
   it('start over resets everything from any phase', () => {
     const s = apply(submit(), loaded(), { type: 'regenerateRequested' });
     expect(wizardReducer(s, { type: 'startOver' })).toEqual(initialWizardState);
