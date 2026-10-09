@@ -49,7 +49,7 @@ Never prefix with `VITE_` — that ships them to the browser. Upstash vars are o
 - Prompt template: `src/lib/buildPrompt.ts` (snapshot in `tests/unit/__snapshots__/buildPrompt.test.ts.snap` — run `npx vitest -u` after intentional template changes and review the diff)
 - Download filename / copy fallback: `src/lib/download.ts`
 - Limits (question count, label lengths, body size): `shared/limits.ts`; Step 1 caps + labels: `shared/step1Schema.ts`; Step 1 form messages: `src/lib/step1Form.ts`
-- Brand colours: `src/index.css` `@theme`; icon: `public/favicon.svg`
+- Brand colours: `--pf-*` variables at the top of `src/index.css`; logo/icons: `public/`
 
 ## Key decisions
 
@@ -88,11 +88,16 @@ Never prefix with `VITE_` — that ships them to the browser. Upstash vars are o
 - **`.vercelignore`** excludes `.env*` (except `.env.example`), build output and reports. Tests ARE uploaded because `tsc -b` in the Vercel build type-checks them.
 - `tsconfig.node.json` includes DOM libs (e2e `page.evaluate` callbacks run in the browser).
 - **Filename** slug keeps non-Latin letters (`\p{L}\p{N}`), max 60 chars, falls back to `project`.
+- **Redis env lookup uses `||`, not `??`** (`redisConfig()` in `api/_lib/rateLimit.ts`): an empty `UPSTASH_REDIS_REST_URL=` (copied from `.env.example`) silently disabled the limiter before this fix.
+- **Theme tokens** (`src/index.css`): `--pf-*` CSS variables switch on `prefers-color-scheme`; `@theme inline` maps them to utilities `ground surface line ink muted accent accent-hover on-accent code-bg code-ink code-heading`. Use these, not raw palette colours or `dark:` variants (exceptions: red for errors/danger, amber for the Step 2 notice). Accent is ONLY for primary buttons, progress, focus rings and code-box headings; selected options use ink. Dark-mode accent hover `#FDBA74` was chosen by us (the brief only gave the light hover). Code box is dark in both themes; its headings use `#FB8A3C` (light accent `#C2410C` on the dark box fails contrast).
+- Fonts: Bricolage Grotesque 700 (`font-display`), IBM Plex Sans (`font-sans`, default), JetBrains Mono (`font-mono`), loaded from Google Fonts in `index.html`. Radius tokens `rounded-card` (18px) / `rounded-control` (10px).
+- Logo: `public/logo-mark.svg` / `logo-mark-dark.svg` swapped via `<picture>` in `Header.tsx`; `favicon.svg` adapts by itself; `apple-touch-icon.png` (180×180) was rendered from `logo-mark.svg` on `#F6F7F9` with Playwright.
 
 ## Status
 
-- M1–M8 done. Production: https://sitecreationprompt.vercel.app (Vercel project `sandeep-95f3/sitecreationprompt`, linked via `.vercel/`, gitignored). Deployed manually with `npx vercel --prod`; GitHub auto-deploy NOT connected (owner's Vercel account needs a GitHub login connection first).
-- Verified in production (2026-10-09): page 200, bundle has no key/env names, 405 GET / 413 oversize / 400 invalid, real Gemini 200 in ~2s, logs metadata-only. Lighthouse mobile 98/100/100/100, desktop 100/100/100/100 (Perf/A11y/BP/SEO).
-- Vercel env vars (Production): `GEMINI_API_KEY` (sensitive), `GEMINI_MODEL`, `RATE_LIMIT_SALT` (sensitive, random). **Upstash NOT yet added** → rate limit currently fails open in production. Add via Vercel dashboard → Storage → Upstash Redis, then redeploy.
+- M1–M8 done + "Ember & Ink" theme and "Three Cards" logo. Production: https://sitecreationprompt.vercel.app (Vercel project `sandeep-95f3/sitecreationprompt`, linked via `.vercel/`, gitignored). **GitHub is connected: every push to `main` deploys to production.**
+- Verified in production (2026-10-09): page 200, bundle has no key/env names, 405 GET / 413 oversize / 400 invalid, real Gemini 200 in ~2s, logs metadata-only.
+- Lighthouse after the theme: mobile 85/100/100/100, desktop 95/100/100/100 (Perf/A11y/BP/SEO). **Mobile perf < 90 target** because the Google Fonts stylesheet is render-blocking (FCP 1.6s → 3.3s on slow 4G). Open decision for the owner: self-host the fonts (@fontsource) or load Google Fonts non-blocking.
+- Vercel env vars (Production, all sensitive/secret): `GEMINI_API_KEY`, `GEMINI_MODEL`, `RATE_LIMIT_SALT`, `KV_REST_API_URL`, `KV_REST_API_TOKEN`. The Upstash DB was added by hand (its Vercel integration isn't attached to this project). Rate limit verified live with `npm run smoke:api` (`tests/smoke/ratelimit.smoke.ts`: 10 allowed, 11th blocked; no Gemini calls).
+- The Upstash token was pasted into a chat log on 2026-10-09 → rotate it in the Upstash console, then update `KV_REST_API_TOKEN` in Vercel and `.env.local`.
 - Bundle 122 KB gz (budget 200).
-- Branding: placeholder wordmark/indigo until the owner provides logo + colours.

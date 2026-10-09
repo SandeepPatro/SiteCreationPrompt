@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { clientIp, hashIp, upstashRateLimit } from '../../api/_lib/rateLimit';
+import { clientIp, hashIp, redisConfig, upstashRateLimit } from '../../api/_lib/rateLimit';
 
 const req = (headers: Record<string, string>) => new Request('http://x/', { headers });
 
@@ -20,6 +20,20 @@ describe('rate limit helpers', () => {
     expect(hashIp('1.2.3.4')).toBe(hashed);
     vi.stubEnv('RATE_LIMIT_SALT', 'other');
     expect(hashIp('1.2.3.4')).not.toBe(hashed);
+  });
+
+  it('reads either naming scheme and skips empty values', () => {
+    const kv = { KV_REST_API_URL: 'https://kv', KV_REST_API_TOKEN: 'kv-token' };
+    expect(redisConfig(kv)).toEqual({ url: 'https://kv', token: 'kv-token' });
+    // Empty UPSTASH_* (as copied from .env.example) must not shadow the KV_* values.
+    expect(
+      redisConfig({ ...kv, UPSTASH_REDIS_REST_URL: '', UPSTASH_REDIS_REST_TOKEN: ' ' }),
+    ).toEqual({ url: 'https://kv', token: 'kv-token' });
+    expect(
+      redisConfig({ UPSTASH_REDIS_REST_URL: 'https://up', UPSTASH_REDIS_REST_TOKEN: 'up-token' }),
+    ).toEqual({ url: 'https://up', token: 'up-token' });
+    expect(redisConfig({ KV_REST_API_URL: 'https://kv' })).toBeNull();
+    expect(redisConfig({})).toBeNull();
   });
 
   it('allows requests when Upstash is not configured (local dev)', async () => {

@@ -11,17 +11,26 @@ export type RateLimiter = (ip: string) => Promise<RateLimitResult>;
 
 let limiter: Ratelimit | null | undefined;
 
+/**
+ * Upstash REST credentials from the environment. Names differ depending on how Upstash was
+ * connected (direct: UPSTASH_REDIS_REST_*, Vercel Marketplace: KV_REST_API_*).
+ * `||`, not `??`: an empty variable (e.g. copied from .env.example) must fall through too.
+ */
+export function redisConfig(env: NodeJS.ProcessEnv = process.env) {
+  const url = env.UPSTASH_REDIS_REST_URL?.trim() || env.KV_REST_API_URL?.trim();
+  const token = env.UPSTASH_REDIS_REST_TOKEN?.trim() || env.KV_REST_API_TOKEN?.trim();
+  return url && token ? { url, token } : null;
+}
+
 function getLimiter(): Ratelimit | null {
   if (limiter !== undefined) return limiter;
-  // Names differ depending on how Upstash was connected (direct vs Vercel Marketplace).
-  const url = process.env.UPSTASH_REDIS_REST_URL ?? process.env.KV_REST_API_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN ?? process.env.KV_REST_API_TOKEN;
-  if (!url || !token) {
+  const config = redisConfig();
+  if (!config) {
     console.warn('[followups] Upstash not configured — rate limiting disabled');
     limiter = null;
   } else {
     limiter = new Ratelimit({
-      redis: new Redis({ url, token }),
+      redis: new Redis(config),
       limiter: Ratelimit.slidingWindow(10, '1 h'),
       prefix: 'promptforge:followups',
     });
