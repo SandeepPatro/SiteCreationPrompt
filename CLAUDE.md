@@ -84,11 +84,15 @@ Never prefix with `VITE_` — that ships them to the browser. Upstash vars are o
 - **`@axe-core/playwright`** (dev only): WCAG 2.1 AA audit (incl. contrast) in Playwright — same engine as Lighthouse a11y. M7: 0 violations on all steps, error state and dialog, light + dark.
 - **Kept full `zod`** (not `zod/mini`): bundle is 122 KB gz vs 200 KB budget; not worth the API churn.
 - ESLint `no-unused-vars` uses `ignoreRestSiblings` (omit-a-key destructuring).
+- **e2e** (`e2e/`, `npm run e2e`): happy path (copy + download + cache), API failure → fallback → finish, 429 notice, invalid API data never rendered, axe WCAG AA on every step in light + dark. Desktop + Pixel 7 projects, against `vite build && vite preview`, API mocked via `page.route` (never calls Gemini). Notice text exists twice (visible + sr-only live region) → scope text selectors to `#step2-form`.
+- **`.vercelignore`** excludes `.env*` (except `.env.example`), build output and reports. Tests ARE uploaded because `tsc -b` in the Vercel build type-checks them.
+- `tsconfig.node.json` includes DOM libs (e2e `page.evaluate` callbacks run in the browser).
 - **Filename** slug keeps non-Latin letters (`\p{L}\p{N}`), max 60 chars, falls back to `project`.
 
 ## Status
 
-- M1–M7 done (scaffold, card shell, Step 1 form, /api/followups, Step 2, prompt output, autosave/dialog/a11y polish). Next: M8 e2e tests + deploy + README.
+- M1–M8 done. Production: https://sitecreationprompt.vercel.app (Vercel project `sandeep-95f3/sitecreationprompt`, linked via `.vercel/`, gitignored). Deployed manually with `npx vercel --prod`; GitHub auto-deploy NOT connected (owner's Vercel account needs a GitHub login connection first).
+- Verified in production (2026-10-09): page 200, bundle has no key/env names, 405 GET / 413 oversize / 400 invalid, real Gemini 200 in ~2s, logs metadata-only. Lighthouse mobile 98/100/100/100, desktop 100/100/100/100 (Perf/A11y/BP/SEO).
+- Vercel env vars (Production): `GEMINI_API_KEY` (sensitive), `GEMINI_MODEL`, `RATE_LIMIT_SALT` (sensitive, random). **Upstash NOT yet added** → rate limit currently fails open in production. Add via Vercel dashboard → Storage → Upstash Redis, then redeploy.
 - Bundle 122 KB gz (budget 200).
 - Branding: placeholder wordmark/indigo until the owner provides logo + colours.
-- Gemini call verified live (`npm run smoke:api`). Not yet verified live: Upstash rate limit, Vercel bundling of api/ + shared/ (needs Vercel account).
