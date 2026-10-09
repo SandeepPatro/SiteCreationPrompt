@@ -1,7 +1,7 @@
 # PromptForge
 
 3-step card wizard → AI follow-up questions (Gemini) → ready-to-paste kickoff prompt for AI coding agents.
-Full approved plan: `C:\Users\sande\.claude\plans\pasted-content-id-fcb0-project-sharded-squid.md`.
+The approved v1 plan (architecture, schema, milestones M1–M8) lives outside the repo; this file records the decisions that matter day to day.
 Owner is intermediate: give brief reasoning, explain only non-obvious choices.
 
 ## Stack
