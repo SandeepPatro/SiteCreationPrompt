@@ -71,7 +71,12 @@ export default function App() {
               </>
             }
           >
-            {phase === 'step1' && <Step1 onSubmit={() => dispatch({ type: 'step1Submitted' })} />}
+            {phase === 'step1' && (
+              <Step1
+                defaultValues={state.step1Form}
+                onSubmit={(form, answers) => dispatch({ type: 'step1Submitted', form, answers })}
+              />
+            )}
             {(phase === 'loading' || phase === 'step2') && (
               <Step2
                 loading={phase === 'loading'}

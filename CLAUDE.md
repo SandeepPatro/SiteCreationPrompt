@@ -43,7 +43,7 @@ Never prefix with `VITE_` — that ships them to the browser. Upstash vars are o
 - Gemini system prompt: `api/_lib/systemPrompt.ts` (M4)
 - Fallback questions per project type: `src/lib/fallbackQuestions.ts` (M5)
 - Prompt template: `src/lib/buildPrompt.ts` (M6)
-- Limits (question count, label lengths, body size): `shared/limits.ts`
+- Limits (question count, label lengths, body size): `shared/limits.ts`; Step 1 caps + labels: `shared/step1Schema.ts`; Step 1 form messages: `src/lib/step1Form.ts`
 - Brand colours: `src/index.css` `@theme`; icon: `public/favicon.svg`
 
 ## Key decisions
@@ -58,5 +58,8 @@ Never prefix with `VITE_` — that ships them to the browser. Upstash vars are o
 
 ## Status
 
-- M1 scaffold done. M2 card shell done (placeholder step content; fake 800ms loading in App.tsx until M5; window.confirm for Start over until M7).
+- M1 scaffold, M2 card shell, M3 Step 1 form done. Placeholders: fake 800ms loading in App.tsx (→ M5); window.confirm for Start over (→ M7).
+- Bundle 111 KB gz after Zod + RHF (budget 200). Consider `zod/mini` in M7 if needed.
 - Vercel link pending (owner needs a Vercel account). Upstash pending (needed by M4).
+- **Two Step 1 shapes**: `src/lib/step1Form.ts` (form: `{value}` rows for RHF field arrays, `''` radios, flat stack fields, all checks continuable so every error shows at once) → `toStep1Answers()` → canonical `shared/step1Schema.ts` (sent to API, used by buildPrompt).
+- **Error focus**: RHF `shouldFocusError` off; we focus the first `[aria-invalid="true"]` in DOM order (works for radios and field arrays).
