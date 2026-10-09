@@ -21,6 +21,13 @@ export default tseslint.config(
   },
   { files: ['src/**/*.tsx'], ...jsxA11y.flatConfigs.recommended },
   {
+    files: ['src/**/*.tsx'],
+    rules: {
+      // Scrollable regions must be keyboard-focusable (axe: scrollable-region-focusable).
+      'jsx-a11y/no-noninteractive-tabindex': ['error', { roles: ['tabpanel', 'region'] }],
+    },
+  },
+  {
     files: ['api/**/*.ts', 'shared/**/*.ts', '*.config.{ts,js}', 'e2e/**/*.ts', 'tests/**/*.ts'],
     languageOptions: { globals: globals.node },
   },

@@ -1,0 +1,80 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`buildPrompt > matches the reference prompt 1`] = `
+"# Project kickoff: Plantly
+
+You are a senior software engineer working with me on a new project. Do NOT write any code yet.
+Your first job is to understand, question, and plan.
+
+## What we're building
+
+- **Project:** Plantly
+- **Description:** A web app that reminds people when to water their houseplants.
+- **Target users:** Apartment dwellers with a few houseplants who keep forgetting to water them.
+- **Project type:** Web app
+
+## Scope (v1 must-haves)
+
+- Add plants with a name, photo, and watering interval
+- Dashboard showing which plants need water today
+- Mark a plant as watered
+
+## Out of scope for v1
+
+Do not build or "prepare for" these:
+
+- Social features / sharing
+- Native mobile apps
+
+## Tech stack
+
+I don't have a stack preference. Propose **2 stack options** suited to this project, with the
+trade-offs of each (cost, complexity, hosting, learning curve), and recommend one.
+Wait for my choice before setting anything up.
+
+## Additional details
+
+- **Do users need accounts?** Yes, sign-in with email
+- **How should reminders reach users?** Email, Browser notifications
+- **Suggest watering intervals for common plants?** Yes
+- **Design notes?** Calm greens.
+  Large buttons.
+
+## Non-functional notes
+
+- Responsive: works well on phones and desktop.
+- Accessibility: labels on all inputs, keyboard navigable, visible focus, sufficient contrast.
+- Handle errors gracefully with clear, user-friendly messages.
+- Never commit secrets; use environment variables and keep them out of client code.
+
+## Engineering standards
+
+- Small, focused commits with clear messages.
+- Write tests for core logic; don't claim something works unless you ran it.
+- Don't add a dependency without explaining why and what it replaces.
+- Explain decisions in simple terms and avoid unnecessary complexity.
+
+## How we will work
+
+1. **Clarify**: ask me every question you need answered, grouped by topic. Don't assume.
+2. **Plan**: propose the architecture, data model, folder structure, risks, and a milestone plan of small, testable steps.
+3. **Wait for my approval** before writing code.
+4. **Build one milestone at a time**. After each one, run the app and tests, summarize what changed, and stop for my review.
+5. **Maintain \`AGENTS.md\`** (or \`CLAUDE.md\` / \`.cursor/rules\` for your tool) with the stack, commands, env vars, conventions, and key decisions. Read it at the start of every session.
+6. If you're unsure, blocked, or about to make an architectural decision, stop and ask.
+
+## Definition of done
+
+- All v1 must-haves work end-to-end.
+- Tests pass; no secrets in the repo or client code.
+- A README covers setup, environment variables, and how to run and deploy.
+
+## Your first response
+
+Reply ONLY with:
+
+1. Your understanding of the project in 3–5 sentences
+2. Your clarifying questions (grouped by topic)
+3. Any red flags or things you'd push back on
+"
+`;

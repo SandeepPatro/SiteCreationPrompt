@@ -12,6 +12,7 @@ import {
   wizardReducer,
 } from './state/wizardReducer';
 import { Step1, STEP1_FORM_ID } from './steps/Step1';
+import { buildPrompt } from './lib/buildPrompt';
 import { NOTICE_TEXT } from './lib/notices';
 import { Step2, STEP2_FORM_ID } from './steps/Step2';
 import { Step3 } from './steps/Step3';
@@ -97,7 +98,12 @@ export default function App() {
                 onSubmit={(answers) => dispatch({ type: 'step2Submitted', answers })}
               />
             )}
-            {phase === 'step3' && <Step3 />}
+            {phase === 'step3' && state.step1 && (
+              <Step3
+                projectName={state.step1.projectName}
+                prompt={buildPrompt(state.step1, state.questions ?? [], state.step2Answers)}
+              />
+            )}
           </Card>
         </div>
       </main>

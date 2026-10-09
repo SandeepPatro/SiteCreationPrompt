@@ -45,7 +45,8 @@ Never prefix with `VITE_` — that ships them to the browser. Upstash vars are o
 - Gemini system prompt: `api/_lib/systemPrompt.ts`. Output shape: `shared/questionSchema.ts` (wire schema → `responseJsonSchema`; snapshot test guards it). Cleanup rules: `shared/normalizeQuestions.ts`
 - Fallback questions per project type: `src/lib/fallbackQuestions.ts` (test checks every list against the Question schema)
 - Step 2 notice texts: `src/lib/notices.ts`; regeneration cap: `MAX_REGENERATIONS` in `src/state/wizardReducer.ts`
-- Prompt template: `src/lib/buildPrompt.ts` (M6)
+- Prompt template: `src/lib/buildPrompt.ts` (snapshot in `tests/unit/__snapshots__/buildPrompt.test.ts.snap` — run `npx vitest -u` after intentional template changes and review the diff)
+- Download filename / copy fallback: `src/lib/download.ts`
 - Limits (question count, label lengths, body size): `shared/limits.ts`; Step 1 caps + labels: `shared/step1Schema.ts`; Step 1 form messages: `src/lib/step1Form.ts`
 - Brand colours: `src/index.css` `@theme`; icon: `public/favicon.svg`
 
@@ -73,9 +74,13 @@ Never prefix with `VITE_` — that ships them to the browser. Upstash vars are o
 - **Failed regeneration keeps current questions** (notice `regenerate_failed`) instead of swapping in fallbacks.
 - **Step 2 answers sync to wizard state on every change** (RHF `subscribe`), so Back/Next never loses them. Booleans are Yes/No radios (unanswered stays possible); empty answers are dropped.
 - ESLint allows non-null `!` in `tests/` only.
+- **buildPrompt rules**: sections without content are omitted (tested: no empty headings, no `undefined`/`null`); multi-line answers are indented to stay inside their list item; stack preferences are quoted (`>`); accessibility/responsive notes only for UI project types; one experience-specific line (beginner line per spec, plus lighter ones for intermediate/senior).
+- **Code box** is a `<pre role="region" tabIndex={0}>` so keyboard users can scroll it; ESLint's `no-noninteractive-tabindex` allows the `region` role for this.
+- **Copy**: Clipboard API, falls back to hidden textarea + `execCommand`; on failure the prompt text is selected and a hint stays visible. Windows' clipboard turns `\n` into `\r\n` — expected.
+- **Filename** slug keeps non-Latin letters (`\p{L}\p{N}`), max 60 chars, falls back to `project`.
 
 ## Status
 
-- M1–M5 done (scaffold, card shell, Step 1 form, /api/followups, Step 2). Placeholders: Step 3 content (→ M6); window.confirm for Start over (→ M7).
-- Bundle 117 KB gz after Zod + RHF (budget 200). Consider `zod/mini` in M7 if needed.
+- M1–M6 done (scaffold, card shell, Step 1 form, /api/followups, Step 2, prompt output). Placeholder: window.confirm for Start over (→ M7).
+- Bundle 120 KB gz (budget 200). Consider `zod/mini` in M7 if needed.
 - Gemini call verified live (`npm run smoke:api`). Not yet verified live: Upstash rate limit, Vercel bundling of api/ + shared/ (needs Vercel account).
