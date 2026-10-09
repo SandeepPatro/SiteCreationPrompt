@@ -14,19 +14,21 @@ Owner is intermediate: give brief reasoning, explain only non-obvious choices.
 
 ## Commands
 
-| Task                      | Command                                                         |
-| ------------------------- | --------------------------------------------------------------- |
-| Frontend only dev         | `npm run dev`                                                   |
-| Frontend + `/api`         | `npm run dev:full` (`vercel dev`; needs `npx vercel link` once) |
-| Typecheck / lint / format | `npm run typecheck` / `npm run lint` / `npm run format`         |
-| Unit tests                | `npm test`                                                      |
-| e2e                       | `npm run e2e` (first time: `npx playwright install chromium`)   |
-| Build                     | `npm run build`                                                 |
-| Deploy                    | `npx vercel` (preview) / `npx vercel --prod`                    |
+| Task                      | Command                                                              |
+| ------------------------- | -------------------------------------------------------------------- |
+| Frontend only dev         | `npm run dev`                                                        |
+| Frontend + `/api`         | `npm run dev:full` (`vercel dev`; needs `npx vercel link` once)      |
+| Typecheck / lint / format | `npm run typecheck` / `npm run lint` / `npm run format`              |
+| Unit tests                | `npm test`                                                           |
+| Live Gemini smoke test    | `npm run smoke:api` (uses `.env.local`; spends 2 free-tier requests) |
+| e2e                       | `npm run e2e` (first time: `npx playwright install chromium`)        |
+| Build                     | `npm run build`                                                      |
+| Deploy                    | `npx vercel` (preview) / `npx vercel --prod`                         |
 
 ## Env vars (see `.env.example`; local values in `.env.local`, gitignored)
 
 `GEMINI_API_KEY`, `GEMINI_MODEL` (default `gemini-3.5-flash-lite`), `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `RATE_LIMIT_SALT`.
+Upstash via the Vercel Marketplace sets `KV_REST_API_URL` / `KV_REST_API_TOKEN` instead — both naming schemes work.
 Never prefix with `VITE_` — that ships them to the browser. Upstash vars are optional locally (rate limit skipped).
 
 ## Conventions
@@ -40,7 +42,7 @@ Never prefix with `VITE_` — that ships them to the browser. Upstash vars are o
 
 ## Where to edit things
 
-- Gemini system prompt: `api/_lib/systemPrompt.ts` (M4)
+- Gemini system prompt: `api/_lib/systemPrompt.ts`. Output shape: `shared/questionSchema.ts` (wire schema → `responseJsonSchema`; snapshot test guards it). Cleanup rules: `shared/normalizeQuestions.ts`
 - Fallback questions per project type: `src/lib/fallbackQuestions.ts` (M5)
 - Prompt template: `src/lib/buildPrompt.ts` (M6)
 - Limits (question count, label lengths, body size): `shared/limits.ts`; Step 1 caps + labels: `shared/step1Schema.ts`; Step 1 form messages: `src/lib/step1Form.ts`
@@ -57,9 +59,15 @@ Never prefix with `VITE_` — that ships them to the browser. Upstash vars are o
 - npm blocked install scripts for `@google/genai` (no-op) and `protobufjs` (version-check postinstall) — both safe to leave unapproved.
 - **Two Step 1 shapes**: `src/lib/step1Form.ts` (form: `{value}` rows for RHF field arrays, `''` radios, flat stack fields, all checks continuable so every error shows at once) → `toStep1Answers()` → canonical `shared/step1Schema.ts` (sent to API, used by buildPrompt).
 - **Error focus**: RHF `shouldFocusError` off; we focus the first `[aria-invalid="true"]` in DOM order (works for radios and field arrays).
+- **Handler uses dependency injection** (`api/_lib/handler.ts` → `createFollowupsHandler`): tests fake Gemini/rate limit/clock; `api/followups.ts` only wires real deps.
+- **Gemini SDK retries disabled** (`retryOptions.attempts: 1`): default is 5 attempts incl. 429 with up to 60s backoff — would exceed the 12s budget and burn quota. 12s abort < client 15s timeout so the server can still reply 503.
+- **`thinkingLevel: LOW`** to keep latency under ~5s; verify with `npm run smoke:api`.
+- **Bad questions are dropped individually**; only < 3 survivors → 503 → frontend fallback.
+- **Rate limit after validation** (malformed requests don't burn quota), **fails open** if Upstash is missing/down (Gemini quota is the backstop).
+- `<` escaped as `<` in the JSON sent to Gemini so user text can't close the `<project>` tags.
 
 ## Status
 
-- M1 scaffold, M2 card shell, M3 Step 1 form done. Placeholders: fake 800ms loading in App.tsx (→ M5); window.confirm for Start over (→ M7).
+- M1–M4 done (scaffold, card shell, Step 1 form, /api/followups). Placeholders: fake 800ms loading in App.tsx (→ M5); window.confirm for Start over (→ M7).
 - Bundle 111 KB gz after Zod + RHF (budget 200). Consider `zod/mini` in M7 if needed.
-- Vercel link pending (owner needs a Vercel account). Upstash pending (needed by M4).
+- Not yet verified live: Gemini call (needs GEMINI_API_KEY in .env.local → `npm run smoke:api`), Upstash rate limit, Vercel bundling of api/ + shared/ (needs Vercel account).

@@ -1,0 +1,60 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`geminiResponseJsonSchema > matches the expected shape 1`] = `
+{
+  "additionalProperties": false,
+  "properties": {
+    "questions": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "help": {
+            "description": "One short sentence explaining why it matters or giving an example; "" if none",
+            "type": "string",
+          },
+          "id": {
+            "description": "Unique snake_case identifier, e.g. "user_accounts"",
+            "type": "string",
+          },
+          "label": {
+            "description": "The question in plain language, max 140 characters",
+            "type": "string",
+          },
+          "options": {
+            "description": "2-8 short choices for select/multiselect; [] for other types",
+            "items": {
+              "type": "string",
+            },
+            "type": "array",
+          },
+          "type": {
+            "enum": [
+              "text",
+              "textarea",
+              "select",
+              "multiselect",
+              "boolean",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "id",
+          "type",
+          "label",
+          "help",
+          "options",
+        ],
+        "type": "object",
+      },
+      "maxItems": 6,
+      "minItems": 3,
+      "type": "array",
+    },
+  },
+  "required": [
+    "questions",
+  ],
+  "type": "object",
+}
+`;
