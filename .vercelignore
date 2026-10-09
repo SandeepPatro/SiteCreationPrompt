@@ -1,0 +1,10 @@
+# Files never uploaded to Vercel (it already skips .env.local by default; this makes it explicit).
+.env*
+!.env.example
+node_modules
+dist
+coverage
+playwright-report
+test-results
+tests
+e2e
