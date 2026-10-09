@@ -58,4 +58,5 @@ Never prefix with `VITE_` — that ships them to the browser. Upstash vars are o
 
 ## Status
 
-- M1 scaffold done. Vercel link pending (owner needs a Vercel account). Upstash pending (needed by M4).
+- M1 scaffold done. M2 card shell done (placeholder step content; fake 800ms loading in App.tsx until M5; window.confirm for Start over until M7).
+- Vercel link pending (owner needs a Vercel account). Upstash pending (needed by M4).
