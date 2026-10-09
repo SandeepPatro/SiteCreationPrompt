@@ -61,13 +61,14 @@ Never prefix with `VITE_` — that ships them to the browser. Upstash vars are o
 - **Error focus**: RHF `shouldFocusError` off; we focus the first `[aria-invalid="true"]` in DOM order (works for radios and field arrays).
 - **Handler uses dependency injection** (`api/_lib/handler.ts` → `createFollowupsHandler`): tests fake Gemini/rate limit/clock; `api/followups.ts` only wires real deps.
 - **Gemini SDK retries disabled** (`retryOptions.attempts: 1`): default is 5 attempts incl. 429 with up to 60s backoff — would exceed the 12s budget and burn quota. 12s abort < client 15s timeout so the server can still reply 503.
-- **`thinkingLevel: LOW`** to keep latency under ~5s; verify with `npm run smoke:api`.
+- **`thinkingLevel: LOW`** to keep latency under ~5s. Verified live 2026-10-09: `gemini-3.5-flash-lite` accepts it, ~2.5s, 3 valid questions.
 - **Bad questions are dropped individually**; only < 3 survivors → 503 → frontend fallback.
 - **Rate limit after validation** (malformed requests don't burn quota), **fails open** if Upstash is missing/down (Gemini quota is the backstop).
 - `<` escaped as `\u003c` in the JSON sent to Gemini so user text can't close the `<project>` tags.
+- **`.env.example` guard test**: fails if a secret has a value there (repo is public; real values only in `.env.local`).
 
 ## Status
 
 - M1–M4 done (scaffold, card shell, Step 1 form, /api/followups). Placeholders: fake 800ms loading in App.tsx (→ M5); window.confirm for Start over (→ M7).
 - Bundle 111 KB gz after Zod + RHF (budget 200). Consider `zod/mini` in M7 if needed.
-- Not yet verified live: Gemini call (needs GEMINI_API_KEY in .env.local → `npm run smoke:api`), Upstash rate limit, Vercel bundling of api/ + shared/ (needs Vercel account).
+- Gemini call verified live (`npm run smoke:api`). Not yet verified live: Upstash rate limit, Vercel bundling of api/ + shared/ (needs Vercel account).
